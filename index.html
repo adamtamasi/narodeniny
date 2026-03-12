@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vsetko najlepsie, Domka!</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0a;
+      color: #f5f0eb;
+      font-family: 'Lato', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── Floating particles ── */
+    .particles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,180,130,0.4), transparent);
+      animation: float linear infinite;
+    }
+    @keyframes float {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    /* ── Hero section ── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 1;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 8vw, 6rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      opacity: 0;
+      animation: fadeUp 1.5s ease forwards 0.3s;
+    }
+    .hero p {
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      font-weight: 300;
+      margin-top: 1rem;
+      opacity: 0;
+      animation: fadeUp 1.5s ease forwards 0.8s;
+      color: #c8b8a8;
+    }
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 1.5s ease forwards 1.4s;
+    }
+    .scroll-hint span {
+      display: block;
+      width: 2px;
+      height: 40px;
+      margin: 0.5rem auto 0;
+      background: linear-gradient(to bottom, #f5f0eb, transparent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
+      50%      { opacity: 1;   transform: scaleY(1); }
+    }
+
+    /* ── Story sections ── */
+    .story-section {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      z-index: 1;
+    }
+
+    .story-card {
+      max-width: 900px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      opacity: 0;
+      transform: translateY(60px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .story-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Alternate layout on larger screens */
+    @media (min-width: 768px) {
+      .story-card {
+        flex-direction: row;
+        gap: 3rem;
+      }
+      .story-section:nth-child(odd) .story-card {
+        flex-direction: row-reverse;
+      }
+    }
+
+    .photo-frame {
+      flex: 0 0 auto;
+      width: min(350px, 80vw);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    .photo-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+    .story-card.visible .photo-frame img {
+      transform: scale(1.03);
+    }
+    .photo-frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      pointer-events: none;
+    }
+
+    .story-text {
+      flex: 1;
+      max-width: 400px;
+    }
+    .story-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      margin-bottom: 0.8rem;
+      font-weight: 400;
+      font-style: italic;
+    }
+    .story-text p {
+      font-weight: 300;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #c8b8a8;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      text-align: center;
+      padding: 2rem 0;
+      z-index: 1;
+      position: relative;
+    }
+    .divider span {
+      display: inline-block;
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #c8b8a8, transparent);
+    }
+
+    /* ── Snack grid section ── */
+    .snack-section {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      z-index: 1;
+    }
+    .snack-card {
+      max-width: 1000px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      opacity: 0;
+      transform: translateY(60px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .snack-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .snack-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 5vw, 2.5rem);
+      font-weight: 700;
+      text-align: center;
+    }
+    .snack-card > p {
+      font-weight: 300;
+      font-size: 1.1rem;
+      color: #c8b8a8;
+      text-align: center;
+      max-width: 500px;
+    }
+    .snack-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      width: 100%;
+    }
+    @media (min-width: 768px) {
+      .snack-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .snack-item {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 1;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      opacity: 0;
+      transform: scale(0.85) rotate(0deg);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .snack-card.visible .snack-item {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+    /* staggered delays */
+    .snack-card.visible .snack-item:nth-child(1) { transition-delay: 0.1s; transform: scale(1) rotate(-2deg); }
+    .snack-card.visible .snack-item:nth-child(2) { transition-delay: 0.2s; transform: scale(1) rotate(1.5deg); }
+    .snack-card.visible .snack-item:nth-child(3) { transition-delay: 0.3s; transform: scale(1) rotate(-1deg); }
+    .snack-card.visible .snack-item:nth-child(4) { transition-delay: 0.4s; transform: scale(1) rotate(2deg); }
+    .snack-card.visible .snack-item:nth-child(5) { transition-delay: 0.5s; transform: scale(1) rotate(-1.5deg); }
+    .snack-card.visible .snack-item:nth-child(6) { transition-delay: 0.6s; transform: scale(1) rotate(1deg); }
+    .snack-card.visible .snack-item:nth-child(7) { transition-delay: 0.7s; transform: scale(1) rotate(-2deg); }
+    .snack-card.visible .snack-item:nth-child(8) { transition-delay: 0.8s; transform: scale(1) rotate(1.5deg); }
+
+    .snack-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .snack-item:hover img {
+      transform: scale(1.08);
+    }
+    .snack-item .snack-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0.6rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+      font-size: 0.85rem;
+      color: #f5f0eb;
+      text-align: center;
+      font-weight: 300;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .snack-item:hover .snack-caption {
+      opacity: 1;
+    }
+    /* On touch devices, always show captions */
+    @media (hover: none) {
+      .snack-item .snack-caption {
+        opacity: 1;
+      }
+    }
+
+    /* ── Finale section ── */
+    .finale {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      z-index: 1;
+    }
+    .finale .story-card {
+      flex-direction: column;
+    }
+    .finale h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 4rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .finale p {
+      font-weight: 300;
+      font-size: clamp(1rem, 3vw, 1.3rem);
+      color: #c8b8a8;
+      max-width: 500px;
+      line-height: 1.8;
+    }
+    .heart {
+      font-size: 3rem;
+      margin-top: 2rem;
+      display: inline-block;
+      animation: heartbeat 1.2s ease-in-out infinite;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15%      { transform: scale(1.15); }
+      30%      { transform: scale(1); }
+      45%      { transform: scale(1.1); }
+    }
+
+    /* ── Fade-up keyframe ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Floating particles -->
+  <div class="particles" id="particles"></div>
+
+
+  <!-- ════════════════════════════════════════════
+       HERO SEKCIA
+       ════════════════════════════════════════════ -->
+  <section class="hero">
+    <h1>Všetko najlepšie, Domka!</h1>
+    <p>Dal som dokopy par fotiek...</p>
+    <div class="scroll-hint">
+      <small style="color:#c8b8a8;">scrolluj dole</small>
+      <span></span>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       STORY SEKCIE
+       ════════════════════════════════════════════ -->
+
+  <div class="divider"><span></span></div>
+
+  <!-- 01: Domka pri Koloseu, zlata hodinka -->
+  <section class="story-section">
+    <div class="story-card">
+      <div class="photo-frame">
+        <img src="photos/01.jpg" alt="Fotka 1">
+      </div>
+      <div class="story-text">
+        <h2>Rím nas privítal</h2>
+        <p>Koloseum, zlaté slnko a ty. Krajší západ slnka som dlho nevidel.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span></span></div>
+
+  <!-- 02: Domka na hore, sedi na skale s vyhladom -->
+  <section class="story-section">
+    <div class="story-card">
+      <div class="photo-frame">
+        <img src="photos/02.jpg" alt="Fotka 2">
+      </div>
+      <div class="story-text">
+        <h2>Vysoká</h2>
+        <p>Je to športovkyňa :* </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span></span></div>
+
+  <!-- 03: Domka doma s ciernym psikom -->
+  <section class="story-section">
+    <div class="story-card">
+      <div class="photo-frame">
+        <img src="photos/03.jpg" alt="Fotka 3">
+      </div>
+      <div class="story-text">
+        <h2>Jóžin</h2>
+        <p>Keď mu musíš úkazať ako sa to robí</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span></span></div>
+
+  <!-- 04: Domka na moste pri Anjelskom hrade -->
+  <section class="story-section">
+    <div class="story-card">
+      <div class="photo-frame">
+        <img src="photos/04.jpg" alt="Fotka 4">
+      </div>
+      <div class="story-text">
+        <h2>Castel Sant'Angelo</h2>
+        <p>Anjel a anjel.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span></span></div>
+
+  <!-- 05: Domka s panoramou Rima zhora -->
+  <section class="story-section">
+    <div class="story-card">
+      <div class="photo-frame">
+        <img src="photos/05.jpg" alt="Fotka 5">
+      </div>
+      <div class="story-text">
+        <h2>Rím aj s reštikou</h2>
+        <p>Pekná je tá Domka</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span></span></div>
+
+  <!-- 06: Domka na schodoch Vittoriana -->
+  <section class="story-section">
+    <div class="story-card">
+      <div class="photo-frame">
+        <img src="photos/06.jpg" alt="Fotka 6">
+      </div>
+      <div class="story-text">
+        <h2>Úsmev na schodoch</h2>
+        <p>Keď si bola rada, že tu je konečne menej ľudí</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span></span></div>
+
+  <!-- 07: Spolocne zrkadlove selfie, bozk v rimskej ulicke -->
+  <section class="story-section">
+    <div class="story-card">
+      <div class="photo-frame">
+        <img src="photos/07.jpg" alt="Fotka 7">
+      </div>
+      <div class="story-text">
+        <h2>My dvaja</h2>
+        <p>Hľadáme v uličkách kde nám dajú kávičku</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span></span></div>
+
+  <!-- ════════════════════════════════════════════
+       SNACK SEKCIA — funny kolaz 8 fotiek s jedlom
+       ════════════════════════════════════════════ -->
+  <section class="snack-section">
+    <div class="snack-card">
+      <h2>Domka a jedlo: love story</h2>
+      <p>Lebo mlsáme každý deň</p>
+      <div class="snack-grid">
+        <div class="snack-item">
+          <img src="photos/eat01.jpg" alt="Snack 1">
+          <div class="snack-caption">pistácia si našla svoju fanúšičkuuu</div>
+        </div>
+        <div class="snack-item">
+          <img src="photos/eat02.jpg" alt="Snack 2">
+          <div class="snack-caption">toto zmizlo za 30 sekúnd</div>
+        </div>
+        <div class="snack-item">
+          <img src="photos/eat03.jpg" alt="Snack 3">
+          <div class="snack-caption">"doneste mi carbonaru"</div>
+        </div>
+        <div class="snack-item">
+          <img src="photos/eat04.jpg" alt="Snack 4">
+          <div class="snack-caption">´najlepšia reštika</div>
+        </div>
+        <div class="snack-item">
+          <img src="photos/eat05.jpg" alt="Snack 5">
+          <div class="snack-caption">ham ham</div>
+        </div>
+        <div class="snack-item">
+          <img src="photos/eat06.jpg" alt="Snack 6">
+          <div class="snack-caption">"dajte nám z každého"</div>
+        </div>
+        <div class="snack-item">
+          <img src="photos/eat07.jpg" alt="Snack 7">
+          <div class="snack-caption">na raňajkách už pozerá obed</div>
+        </div>
+        <div class="snack-item">
+          <img src="photos/eat08.jpg" alt="Snack 8">
+          <div class="snack-caption">aj na túre musí byť snack</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span></span></div>
+
+  <!-- 08: Domka na Namesti sv. Petra, zapad slnka -->
+  <section class="story-section">
+    <div class="story-card">
+      <div class="photo-frame">
+        <img src="photos/08.jpg" alt="Fotka 8">
+      </div>
+      <div class="story-text">
+        <h2>Čo na tebe ľúbim</h2>
+        <p>Ten tvoj úsmev a to ako si užívaš každý moment. Som veľmi rád, že som ťa oslovil na eskalátore.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span></span></div>
+
+  <!-- ════════════════════════════════════════════
+       FINALE
+       ════════════════════════════════════════════ -->
+  <section class="finale">
+    <div class="story-card">
+      <h2>Všetko najlepšie, Domka</h2>
+      <p>Ďakujem ti za každý smiech, každý moment a všetko medzi tým. Nech máme veľa dalších spoločných dobrodružstiev. Uži si svoj narodeninový deň!</p>
+      <div class="heart">&#10084;</div>
+    </div>
+  </section>
+
+  <script>
+    /* ── Scroll reveal ── */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.story-card, .snack-card').forEach(card => observer.observe(card));
+
+    /* ── Floating particles ── */
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      const size = Math.random() * 6 + 2;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+      p.style.animationDelay = (Math.random() * 20) + 's';
+      container.appendChild(p);
+    }
+
+  </script>
+</body>
+</html>
